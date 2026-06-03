@@ -8,7 +8,7 @@ from accounts.models import User
 class DashboardView(LoginRequiredMixin, TemplateView):
     """Main dashboard view"""
     template_name = 'core/dashboard.html'
-    login_url = 'login'
+    login_url = 'accounts:login'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

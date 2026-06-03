@@ -7,7 +7,7 @@ from .models import User
 
 class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     """Mixin to restrict access to admin users only"""
-    login_url = reverse_lazy('login')
+    login_url = reverse_lazy('accounts:login')
 
     def test_func(self):
         return self.request.user.is_authenticated and self.request.user.role == User.Role.ADMIN
@@ -20,7 +20,7 @@ class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 class CoordenadorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     """Mixin to restrict access to coordinator users and above"""
-    login_url = reverse_lazy('login')
+    login_url = reverse_lazy('accounts:login')
 
     def test_func(self):
         if not self.request.user.is_authenticated:
@@ -35,4 +35,4 @@ class CoordenadorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 class ProfessorRequiredMixin(LoginRequiredMixin):
     """Mixin to restrict access to authenticated users (teachers and above)"""
-    login_url = reverse_lazy('login')
+    login_url = reverse_lazy('accounts:login')
