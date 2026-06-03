@@ -10,7 +10,7 @@ from .models import User
 class LoginView(DjangoLoginView):
     template_name = 'accounts/login.html'
     redirect_authenticated_user = True
-    next_page = reverse_lazy('dashboard')
+    next_page = reverse_lazy('core:dashboard')
 
     def form_valid(self, form):
         messages.success(self.request, f'Bem-vindo, {form.cleaned_data.get("username")}!')
@@ -22,7 +22,7 @@ class LoginView(DjangoLoginView):
 
 
 class LogoutView(DjangoLogoutView):
-    next_page = reverse_lazy('login')
+    next_page = reverse_lazy('accounts:login')
 
     def dispatch(self, request, *args, **kwargs):
         messages.success(request, 'Você foi desconectado com sucesso.')
