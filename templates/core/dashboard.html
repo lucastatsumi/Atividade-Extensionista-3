@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+    <p>Bem-vindo, {{ user.get_full_name|default:user.username }}!</p>
+</div>
+
+<div class="alert alert-info">
+    <i class="fas fa-info-circle"></i> 
+    <strong>Bem-vindo!</strong> Este é o painel de controle do EduPresence. 
+    Use o menu à esquerda para navegar pelas diferentes funcionalidades.
+</div>
+
+<div class="row">
+    <!-- Cards de Resumo -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Total de Alunos</h6>
+                        <h2 class="text-primary">0</h2>
+                    </div>
+                    <div style="font-size: 2.5rem; color: #e2e8f0;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Turmas</h6>
+                        <h2 class="text-info">0</h2>
+                    </div>
+                    <div style="font-size: 2.5rem; color: #e2e8f0;">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Frequência Média</h6>
+                        <h2 class="text-success">--</h2>
+                    </div>
+                    <div style="font-size: 2.5rem; color: #e2e8f0;">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Em Risco</h6>
+                        <h2 class="text-danger">0</h2>
+                    </div>
+                    <div style="font-size: 2.5rem; color: #e2e8f0;">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Informações do Usuário -->
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-user"></i> Informações do Usuário
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Nome:</strong> {{ user.get_full_name|default:"Não informado" }}</p>
+                <p><strong>Email:</strong> {{ user.email|default:"Não informado" }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Usuário:</strong> {{ user.username }}</p>
+                <p><strong>Perfil:</strong> <span class="badge bg-primary">{{ user.get_role_display }}</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Text -->
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="fas fa-question-circle"></i> Como Começar
+    </div>
+    <div class="card-body">
+        <ul>
+            <li>Explore o menu à esquerda para acessar as diferentes funcionalidades</li>
+            <li>Cada seção possui um conjunto específico de operações de acordo com seu perfil</li>
+            <li>Para mais informações, consulte a documentação ou entre em contato com o suporte</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
