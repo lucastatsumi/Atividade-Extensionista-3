@@ -215,7 +215,7 @@ Login
 ## 11) Cronograma (4 semanas)
 
 - **Semana 1:** setup Django 5, app `accounts`, permissões, app `escola`.
-- **Semana 2:** app `alunos` e `matriculas`, validações e mensagens.
+- **Semana 2:** app `alunos` e `matrículas`, validações e mensagens.
 - **Semana 3:** app `frequencia` (chamada em lote, histórico, paginação).
 - **Semana 4:** monitoramento (<75%), dashboard com gráfico mensal, relatórios e exportação Excel, testes finais e homologação.
 
