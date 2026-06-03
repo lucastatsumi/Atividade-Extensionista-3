@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Exclusão - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-trash"></i> Confirmar Exclusão</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="alert alert-danger">
+            <h4>Tem certeza que deseja deletar?</h4>
+            <p>Esta ação não pode ser desfeita.</p>
+            <p>{{ object }}</p>
+        </div>
+
+        <form method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Confirmar Exclusão
+            </button>
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

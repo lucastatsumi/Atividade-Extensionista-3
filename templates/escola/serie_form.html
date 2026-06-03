@@ -1,0 +1,32 @@
+{% extends 'escola/form.html' %}
+
+{% block title %}{% if object %}Editar Série{% else %}Nova Série{% endif %} - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        {% if object %}
+            <i class="fas fa-edit"></i> Editar Série
+        {% else %}
+            <i class="fas fa-plus"></i> Nova Série
+        {% endif %}
+    </h1>
+</div>
+
+{{ block.super }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add form-control and form-select classes automatically
+    document.querySelectorAll('input[type="text"], input[type="number"], textarea, select').forEach(field => {
+        if (!field.classList.contains('form-control') && !field.classList.contains('form-select')) {
+            if (field.tagName === 'SELECT') {
+                field.classList.add('form-select');
+            } else {
+                field.classList.add('form-control');
+            }
+        }
+    });
+</script>
+{% endblock %}

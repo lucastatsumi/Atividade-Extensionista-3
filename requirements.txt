@@ -1,0 +1,12 @@
+asgiref==3.11.1
+dj-database-url==3.1.2
+Django==5.0.3
+et_xmlfile==2.0.0
+gunicorn==26.0.0
+openpyxl==3.1.5
+packaging==26.2
+pillow==12.2.0
+python-decouple==3.8
+setuptools==82.0.1
+sqlparse==0.5.5
+wheel==0.47.0
