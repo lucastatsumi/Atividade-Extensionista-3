@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Chamada Diária - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-clipboard-list"></i> Chamada Diária</h1>
+    <p>Registre a presença dos alunos</p>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-search"></i> Selecione Turma e Data
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label for="turma-select" class="form-label">
+                    <i class="fas fa-layer-group"></i> Turma
+                </label>
+                <select id="turma-select" name="turma" class="form-select" required>
+                    <option value="">-- Selecione uma turma --</option>
+                    {% for turma in turmas %}
+                        <option value="{{ turma.id }}" {% if turma.id|stringformat:"s" == turma_filtro %}selected{% endif %}>
+                            {{ turma.nome }} ({{ turma.serie.nome }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="data-input" class="form-label">
+                    <i class="fas fa-calendar"></i> Data
+                </label>
+                <input type="date" id="data-input" name="data" class="form-control" value="{{ data_selecionada|date:'Y-m-d' }}" required>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> Carregar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if turma_selecionada %}
+<form method="post" id="chamada-form">
+    {% csrf_token %}
+    
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-list"></i> Alunos de <strong>{{ turma_selecionada.nome }}</strong>
+                    <br>
+                    <small class="text-muted">Data: {{ data_selecionada|date:"d/m/Y" }}</small>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="marcarTodos('P')">
+                        <i class="fas fa-check"></i> Todos Presentes
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="marcarTodos('A')">
+                        <i class="fas fa-times"></i> Todos Ausentes
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if matriculas %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Data de Nascimento</th>
+                                <th colspan="3" class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for matricula in matriculas %}
+                                {% with frequencia=frequencias|dict_lookup:matricula.aluno.id %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ matricula.aluno.nome }}</strong><br>
+                                        <small class="text-muted">{{ matricula.aluno.idade }} anos</small>
+                                    </td>
+                                    <td>{{ matricula.aluno.data_nascimento|date:"d/m/Y" }}</td>
+                                    <td width="100px" class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <input type="radio" class="btn-check" name="status_{{ matricula.aluno.id }}" id="presente_{{ matricula.aluno.id }}" value="P" {% if frequencia.status == 'P' %}checked{% endif %}>
+                                            <label class="btn btn-outline-success" for="presente_{{ matricula.aluno.id }}">
+                                                <i class="fas fa-check"></i> Presente
+                                            </label>
+
+                                            <input type="radio" class="btn-check" name="status_{{ matricula.aluno.id }}" id="ausente_{{ matricula.aluno.id }}" value="A" {% if frequencia.status == 'A' %}checked{% endif %}>
+                                            <label class="btn btn-outline-danger" for="ausente_{{ matricula.aluno.id }}">
+                                                <i class="fas fa-times"></i> Ausente
+                                            </label>
+
+                                            <input type="radio" class="btn-check" name="status_{{ matricula.aluno.id }}" id="justificada_{{ matricula.aluno.id }}" value="J" {% if frequencia.status == 'J' %}checked{% endif %}>
+                                            <label class="btn btn-outline-warning" for="justificada_{{ matricula.aluno.id }}">
+                                                <i class="fas fa-exclamation"></i> Justificada
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endwith %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> Salvar Chamada
+                    </button>
+                    <a href="{% url 'frequencia:chamada_diaria' %}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-times"></i> Limpar
+                    </a>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Nenhum aluno ativo registrado nesta turma.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</form>
+{% endif %}
+
+<script>
+function marcarTodos(status) {
+    const form = document.getElementById('chamada-form');
+    const radioButtons = form.querySelectorAll('input[type="radio"]');
+    
+    radioButtons.forEach(radio => {
+        if (radio.value === status) {
+            radio.checked = true;
+        }
+    });
+}
+
+// Template filter to get dictionary value
+</script>
+
+{% block extra_js %}
+<script>
+// Simple dict_lookup filter equivalent
+document.addEventListener('DOMContentLoaded', function() {
+    // This is handled by Django template tag
+});
+</script>
+{% endblock %}
+{% endblock %}

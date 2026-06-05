@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Deletar Turma - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h1>
+    <p>Tem certeza que deseja deletar esta turma?</p>
+</div>
+
+<div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+        <i class="fas fa-warning"></i> Atenção - Ação Irreversível
+    </div>
+    <div class="card-body">
+        <p>Você está prestes a deletar permanentemente:</p>
+        
+        <div class="alert alert-warning">
+            <strong>{{ object.nome }}</strong><br>
+            Série: {{ object.serie.nome }}
+        </div>
+
+        <p class="text-danger">
+            <strong>⚠️ Aviso:</strong> Esta ação não pode ser desfeita.
+        </p>
+
+        <form method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-lg">
+                <i class="fas fa-trash"></i> Sim, Deletar Turma
+            </button>
+            <a href="{% url 'escola:turma_list' %}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
