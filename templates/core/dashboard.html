@@ -22,7 +22,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted">Total de Alunos</h6>
-                        <h2 class="text-primary">0</h2>
+                        <h2 class="text-primary">{{ total_alunos }}</h2>
                     </div>
                     <div style="font-size: 2.5rem; color: #e2e8f0;">
                         <i class="fas fa-users"></i>
@@ -38,7 +38,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted">Turmas</h6>
-                        <h2 class="text-info">0</h2>
+                        <h2 class="text-info">{{ total_turmas }}</h2>
                     </div>
                     <div style="font-size: 2.5rem; color: #e2e8f0;">
                         <i class="fas fa-layer-group"></i>
@@ -54,7 +54,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted">Frequência Média</h6>
-                        <h2 class="text-success">--</h2>
+                        <h2 class="text-success">{% if frequencia_media is not None %}{{ frequencia_media }}%{% else %}--{% endif %}</h2>
                     </div>
                     <div style="font-size: 2.5rem; color: #e2e8f0;">
                         <i class="fas fa-percentage"></i>
@@ -70,7 +70,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted">Em Risco</h6>
-                        <h2 class="text-danger">0</h2>
+                        <h2 class="text-danger">{{ alunos_em_risco }}</h2>
                     </div>
                     <div style="font-size: 2.5rem; color: #e2e8f0;">
                         <i class="fas fa-exclamation-circle"></i>
