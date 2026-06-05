@@ -263,6 +263,9 @@
                         <a href="{% url 'alunos:aluno_list' %}" class="nav-link {% if request.resolver_match.url_name == 'aluno_list' %}active{% endif %}">
                             <i class="fas fa-users"></i> Alunos
                         </a>
+                        <a href="{% url 'alunos:matricula_list' %}" class="nav-link {% if request.resolver_match.url_name == 'matricula_list' %}active{% endif %}">
+                            <i class="fas fa-file-contract"></i> Matrículas
+                        </a>
                     {% endif %}
 
                     {% if user.role == 'PROF' or user.role == 'ADMIN' %}
