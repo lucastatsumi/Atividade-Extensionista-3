@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Editar Matrícula{% else %}Nova Matrícula{% endif %} - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="fas fa-graduation-cap"></i> {% if form.instance.pk %}Editar Matrícula{% else %}Nova Matrícula{% endif %}</h1>
+            <p>Preencha os dados abaixo para {% if form.instance.pk %}atualizar{% else %}registrar{% endif %} uma matrícula</p>
+        </div>
+        <a href="{% url 'alunos:matricula_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-edit"></i> Formulário de Matrícula
+    </div>
+    <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.aluno.id_for_label }}" class="form-label">
+                            <i class="fas fa-user"></i> {{ form.aluno.label }}
+                        </label>
+                        {{ form.aluno }}
+                        {% if form.aluno.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.aluno.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.turma.id_for_label }}" class="form-label">
+                            <i class="fas fa-layer-group"></i> {{ form.turma.label }}
+                        </label>
+                        {{ form.turma }}
+                        {% if form.turma.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.turma.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.status.id_for_label }}" class="form-label">
+                            <i class="fas fa-info-circle"></i> {{ form.status.label }}
+                        </label>
+                        {{ form.status }}
+                        {% if form.status.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.status.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.observacoes.id_for_label }}" class="form-label">
+                    <i class="fas fa-sticky-note"></i> {{ form.observacoes.label }}
+                </label>
+                {{ form.observacoes }}
+                {% if form.observacoes.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.observacoes.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+                <a href="{% url 'alunos:matricula_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

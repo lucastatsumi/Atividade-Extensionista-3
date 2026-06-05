@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}Relatório do Aluno - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-file-pdf"></i> Relatório do Aluno</h1>
+    <p>Gere um relatório detalhado de frequência para um aluno</p>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-search"></i> Selecione um Aluno
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label for="aluno-select" class="form-label">Aluno</label>
+                <select id="aluno-select" name="aluno_id" class="form-select" required>
+                    <option value="">-- Selecione um aluno --</option>
+                    {% for aluno_opt in alunos %}
+                        <option value="{{ aluno_opt.id }}" {% if aluno_opt.id|stringformat:"s" == aluno_id %}selected{% endif %}>
+                            {{ aluno_opt.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="data-inicio" class="form-label">Data Início</label>
+                <input type="date" id="data-inicio" name="data_inicio" class="form-control" value="{{ data_inicio }}">
+            </div>
+            <div class="col-md-2">
+                <label for="data-fim" class="form-label">Data Fim</label>
+                <input type="date" id="data-fim" name="data_fim" class="form-control" value="{{ data_fim }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> Gerar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if aluno %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-user"></i> Informações do Aluno
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Nome:</strong> {{ aluno.nome }}</p>
+                        <p><strong>Data de Nascimento:</strong> {{ aluno.data_nascimento|date:"d/m/Y" }} ({{ aluno.idade }} anos)</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Email:</strong> {{ aluno.email|default:"Não informado" }}</p>
+                        <p><strong>Telefone:</strong> {{ aluno.telefone }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center">
+                    <h2 class="text-primary">{{ total_aulas }}</h2>
+                    <p class="text-muted">Total de Aulas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center">
+                    <h2 class="text-success">{{ presentes }}</h2>
+                    <p class="text-muted">Presenças</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center">
+                    <h2 class="text-danger">{{ ausentes }}</h2>
+                    <p class="text-muted">Ausências</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center">
+                    <h2 class="text-warning">{{ justificadas }}</h2>
+                    <p class="text-muted">Justificadas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="fas fa-list"></i> Histórico de Frequência
+    </div>
+    <div class="card-body">
+        {% if frequencias %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Turma</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for freq in frequencias %}
+                        <tr>
+                            <td>{{ freq.data|date:"d/m/Y" }}</td>
+                            <td>{{ freq.turma.nome }}</td>
+                            <td>
+                                {% if freq.status == 'P' %}
+                                    <span class="badge bg-success">Presente</span>
+                                {% elif freq.status == 'A' %}
+                                    <span class="badge bg-danger">Ausente</span>
+                                {% elif freq.status == 'J' %}
+                                    <span class="badge bg-warning">Justificada</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Nenhum registro de frequência encontrado para este aluno no período selecionado.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-4">
+    <form method="post" action="{% url 'relatorios:exportar_excel' %}" class="d-inline">
+        {% csrf_token %}
+        <input type="hidden" name="aluno_id" value="{{ aluno.id }}">
+        <input type="hidden" name="data_inicio" value="{{ data_inicio }}">
+        <input type="hidden" name="data_fim" value="{{ data_fim }}">
+        <button type="submit" class="btn btn-success btn-lg">
+            <i class="fas fa-download"></i> Exportar em Excel
+        </button>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Inativar Aluno - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-ban"></i> Confirmar Inativação</h1>
+    <p>Tem certeza que deseja inativar este aluno?</p>
+</div>
+
+<div class="card border-warning">
+    <div class="card-header bg-warning text-dark">
+        <i class="fas fa-info-circle"></i> Inativar Aluno
+    </div>
+    <div class="card-body">
+        <p>Você está prestes a inativar o seguinte aluno:</p>
+        
+        <div class="alert alert-info">
+            <strong>{{ object.nome }}</strong><br>
+            Data de Nascimento: {{ object.data_nascimento|date:"d/m/Y" }}<br>
+            Responsável: {{ object.responsavel }}
+        </div>
+
+        <p class="text-muted">
+            <strong>Nota:</strong> O aluno inativado não será removido do sistema, apenas marcado como inativo. Você poderá reativá-lo posteriormente editando o registro.
+        </p>
+
+        <form method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning btn-lg">
+                <i class="fas fa-ban"></i> Sim, Inativar Aluno
+            </button>
+            <a href="{% url 'alunos:aluno_list' %}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
