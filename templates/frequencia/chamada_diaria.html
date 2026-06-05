@@ -136,28 +136,4 @@
     </div>
 </form>
 {% endif %}
-
-<script>
-function marcarTodos(status) {
-    const form = document.getElementById('chamada-form');
-    const radioButtons = form.querySelectorAll('input[type="radio"]');
-    
-    radioButtons.forEach(radio => {
-        if (radio.value === status) {
-            radio.checked = true;
-        }
-    });
-}
-
-// Template filter to get dictionary value
-</script>
-
-{% block extra_js %}
-<script>
-// Simple dict_lookup filter equivalent
-document.addEventListener('DOMContentLoaded', function() {
-    // This is handled by Django template tag
-});
-</script>
-{% endblock %}
 {% endblock %}
