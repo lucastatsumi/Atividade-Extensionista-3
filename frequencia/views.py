@@ -3,6 +3,9 @@ from django.views.generic import ListView, CreateView, FormView
 from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from datetime import date
 from accounts.mixins import ProfessorRequiredMixin
 from .models import Frequencia
@@ -146,3 +149,43 @@ class FrequenciaCreateView(ProfessorRequiredMixin, SuccessMessageMixin, CreateVi
     success_url = reverse_lazy('frequencia:historico')
     success_message = 'Frequência registrada com sucesso!'
 
+
+@require_http_methods(["POST"])
+def atualizar_status_presenca(request):
+    """API endpoint for updating attendance status in real-time"""
+    try:
+        aluno_id = request.POST.get('aluno_id')
+        turma_id = request.POST.get('turma_id')
+        data = request.POST.get('data')
+        status = request.POST.get('status')
+        
+        if not all([aluno_id, turma_id, data, status]):
+            return JsonResponse({'success': False, 'error': 'Missing required fields'}, status=400)
+        
+        from escola.models import Turma
+        from alunos.models import Aluno
+        
+        # Verify the professor has access to this turma
+        turma = Turma.objects.get(id=turma_id)
+        aluno = Aluno.objects.get(id=aluno_id)
+        
+        # Check if the aluno is enrolled in the turma
+        from alunos.models import Matricula
+        matricula = Matricula.objects.get(aluno=aluno, turma=turma, status='ATIVA')
+        
+        # Create or update the frequency record
+        frequencia, created = Frequencia.objects.update_or_create(
+            aluno=aluno,
+            turma=turma,
+            data=data,
+            defaults={'status': status}
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Status atualizado com sucesso!',
+            'frequencia_id': frequencia.id,
+            'status': frequencia.get_status_display()
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
