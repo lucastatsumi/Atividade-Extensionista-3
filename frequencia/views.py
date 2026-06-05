@@ -6,12 +6,15 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
+import logging
 from datetime import date
 from accounts.mixins import ProfessorRequiredMixin
 from .models import Frequencia
 from .forms import FrequenciaForm, ChamadaDiariaForm
 from escola.models import Turma
 from alunos.models import Aluno, Matricula
+
+logger = logging.getLogger(__name__)
 
 
 class ChamadaDiariaView(ProfessorRequiredMixin, FormView):
@@ -189,7 +192,5 @@ def atualizar_status_presenca(request):
         })
     except Exception as e:
         # Log the error but don't expose sensitive information
-        import logging
-        logger = logging.getLogger(__name__)
         logger.error(f"Error updating attendance status: {str(e)}")
         return JsonResponse({'success': False, 'error': 'Erro ao atualizar status'}, status=500)

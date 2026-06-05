@@ -163,8 +163,18 @@ function marcarTodos(status) {
 function atualizarStatus(radioElement) {
     const alunoId = radioElement.dataset.alunoId;
     const status = radioElement.value;
-    const turmaId = document.querySelector('input[name="turma"]').value;
-    const data = document.querySelector('input[name="data"]').value;
+    
+    // Get form fields with validation
+    const turmaField = document.querySelector('input[name="turma"]');
+    const dataField = document.querySelector('input[name="data"]');
+    
+    if (!turmaField || !dataField || !turmaField.value || !dataField.value) {
+        console.error('Campos obrigatórios não encontrados no formulário');
+        return;
+    }
+    
+    const turmaId = turmaField.value;
+    const data = dataField.value;
     
     const formData = new FormData();
     formData.append('aluno_id', alunoId);
@@ -181,10 +191,7 @@ function atualizarStatus(radioElement) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            // Status updated successfully
-            console.log('Status atualizado:', data.message);
-        } else {
+        if (!data.success) {
             console.error('Erro ao atualizar status:', data.error);
             alert('Erro ao atualizar status: ' + data.error);
         }
