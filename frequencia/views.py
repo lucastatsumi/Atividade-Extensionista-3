@@ -41,6 +41,10 @@ class ChamadaDiariaView(ProfessorRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        from escola.models import Turma
+        
+        # Always include turmas for the form
+        context['turmas'] = Turma.objects.filter(ativo=True)
         
         # Check if turma and data are in request
         if self.request.method == 'POST' or ('turma' in self.request.GET and 'data' in self.request.GET):
@@ -49,7 +53,6 @@ class ChamadaDiariaView(ProfessorRequiredMixin, FormView):
                 data_str = self.request.POST.get('data') or self.request.GET.get('data')
                 
                 if turma_id and data_str:
-                    from escola.models import Turma
                     turma = Turma.objects.get(id=turma_id)
                     data_obj = date.fromisoformat(data_str)
                     
