@@ -90,17 +90,17 @@
                                     <td>{{ matricula.aluno.data_nascimento|date:"d/m/Y" }}</td>
                                     <td width="100px" class="text-center">
                                         <div class="btn-group" role="group">
-                                            <input type="radio" class="btn-check" name="status_{{ matricula.aluno.id }}" id="presente_{{ matricula.aluno.id }}" value="P" {% if frequencia.status == 'P' %}checked{% endif %}>
+                                            <input type="radio" class="btn-check status-radio" name="status_{{ matricula.aluno.id }}" id="presente_{{ matricula.aluno.id }}" value="P" data-aluno-id="{{ matricula.aluno.id }}" {% if frequencia.status == 'P' %}checked{% endif %}>
                                             <label class="btn btn-outline-success" for="presente_{{ matricula.aluno.id }}">
                                                 <i class="fas fa-check"></i> Presente
                                             </label>
 
-                                            <input type="radio" class="btn-check" name="status_{{ matricula.aluno.id }}" id="ausente_{{ matricula.aluno.id }}" value="A" {% if frequencia.status == 'A' %}checked{% endif %}>
+                                            <input type="radio" class="btn-check status-radio" name="status_{{ matricula.aluno.id }}" id="ausente_{{ matricula.aluno.id }}" value="A" data-aluno-id="{{ matricula.aluno.id }}" {% if frequencia.status == 'A' %}checked{% endif %}>
                                             <label class="btn btn-outline-danger" for="ausente_{{ matricula.aluno.id }}">
                                                 <i class="fas fa-times"></i> Ausente
                                             </label>
 
-                                            <input type="radio" class="btn-check" name="status_{{ matricula.aluno.id }}" id="justificada_{{ matricula.aluno.id }}" value="J" {% if frequencia.status == 'J' %}checked{% endif %}>
+                                            <input type="radio" class="btn-check status-radio" name="status_{{ matricula.aluno.id }}" id="justificada_{{ matricula.aluno.id }}" value="J" data-aluno-id="{{ matricula.aluno.id }}" {% if frequencia.status == 'J' %}checked{% endif %}>
                                             <label class="btn btn-outline-warning" for="justificada_{{ matricula.aluno.id }}">
                                                 <i class="fas fa-exclamation"></i> Justificada
                                             </label>
@@ -134,10 +134,78 @@
 
 {% block extra_js %}
 <script>
+// Get CSRF token for AJAX requests
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
 function marcarTodos(status) {
     document.querySelectorAll(`#chamada-form input[type="radio"][value="${status}"]`).forEach((radio) => {
         radio.checked = true;
+        // Trigger AJAX update for each student
+        atualizarStatus(radio);
     });
 }
+
+function atualizarStatus(radioElement) {
+    const alunoId = radioElement.dataset.alunoId;
+    const status = radioElement.value;
+    
+    // Get form fields with validation
+    const turmaField = document.querySelector('input[name="turma"]');
+    const dataField = document.querySelector('input[name="data"]');
+    
+    if (!turmaField || !dataField || !turmaField.value || !dataField.value) {
+        alert('Erro ao atualizar status: Campos obrigatórios faltantes');
+        return;
+    }
+    
+    const turmaId = turmaField.value;
+    const data = dataField.value;
+    
+    const formData = new FormData();
+    formData.append('aluno_id', alunoId);
+    formData.append('turma_id', turmaId);
+    formData.append('data', data);
+    formData.append('status', status);
+    
+    fetch('{% url "frequencia:atualizar_status" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            alert('Erro ao atualizar status. Por favor, tente novamente.');
+        }
+    })
+    .catch(error => {
+        alert('Erro ao atualizar status. Por favor, tente novamente.');
+    });
+}
+
+// Add event listeners to all radio buttons
+document.querySelectorAll('.status-radio').forEach((radio) => {
+    radio.addEventListener('change', function() {
+        atualizarStatus(this);
+    });
+});
 </script>
 {% endblock %}
+

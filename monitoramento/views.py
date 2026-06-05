@@ -5,6 +5,7 @@ from accounts.mixins import CoordenadorRequiredMixin
 from .models import AlertaEvasao
 from .services import FrequenciaService
 from escola.models import Turma
+from alunos.models import Aluno
 
 
 class AlunosRiscoListView(CoordenadorRequiredMixin, ListView):
@@ -49,6 +50,10 @@ class DashboardMonitoramentoView(CoordenadorRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Total students and classes
+        context['total_alunos'] = Aluno.objects.filter(status='ATIVO').count()
+        context['total_turmas'] = Turma.objects.filter(ativo=True).count()
         
         # Total students at risk
         alertas_ativos = AlertaEvasao.objects.filter(resolvido=False)
