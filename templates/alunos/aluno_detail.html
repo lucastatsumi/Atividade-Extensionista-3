@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ aluno.nome }} - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="fas fa-user"></i> {{ aluno.nome }}</h1>
+            <p>Detalhes do aluno</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'alunos:aluno_update' aluno.id %}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+            <a href="{% url 'alunos:aluno_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Informações Pessoais
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Nome</h6>
+                        <p class="h5">{{ aluno.nome }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Data de Nascimento</h6>
+                        <p class="h5">{{ aluno.data_nascimento|date:"d/m/Y" }} ({{ aluno.idade }} anos)</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Email</h6>
+                        <p class="h5">{{ aluno.email|default:"Não informado" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Telefone</h6>
+                        <p class="h5">{{ aluno.telefone }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Responsável</h6>
+                        <p class="h5">{{ aluno.responsavel }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Status</h6>
+                        <p>
+                            {% if aluno.status == 'ATIVO' %}
+                                <span class="badge bg-success">Ativo</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inativo</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Cadastrado em</h6>
+                        <p class="h5">{{ aluno.criado_em|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Atualizado em</h6>
+                        <p class="h5">{{ aluno.atualizado_em|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-graduation-cap"></i> Matrículas
+            </div>
+            <div class="card-body">
+                {% if aluno.matriculas.all %}
+                <div class="list-group">
+                    {% for matricula in aluno.matriculas.all %}
+                    <div class="list-group-item">
+                        <h6 class="mb-1">{{ matricula.turma.nome }}</h6>
+                        <p class="mb-1 small text-muted">{{ matricula.turma.serie.nome }}</p>
+                        <span class="badge bg-info">{{ matricula.get_status_display }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">Nenhuma matrícula registrada</p>
+                {% endif %}
+                
+                <a href="{% url 'alunos:matricula_create' %}" class="btn btn-primary btn-sm mt-3 w-100">
+                    <i class="fas fa-plus"></i> Nova Matrícula
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

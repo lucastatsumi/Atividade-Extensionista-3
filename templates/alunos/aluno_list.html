@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Alunos - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="fas fa-users"></i> Alunos</h1>
+            <p>Gerenciar alunos registrados no sistema</p>
+        </div>
+        <a href="{% url 'alunos:aluno_create' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i> Novo Aluno
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-list"></i> Lista de Alunos
+    </div>
+    <div class="card-body">
+        {% if alunos %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Data de Nascimento</th>
+                        <th>Responsável</th>
+                        <th>Telefone</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aluno in alunos %}
+                    <tr>
+                        <td>
+                            <strong>{{ aluno.nome }}</strong>
+                        </td>
+                        <td>{{ aluno.data_nascimento|date:"d/m/Y" }}</td>
+                        <td>{{ aluno.responsavel }}</td>
+                        <td>{{ aluno.telefone }}</td>
+                        <td>
+                            {% if aluno.status == 'ATIVO' %}
+                                <span class="badge bg-success">Ativo</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'alunos:aluno_detail' aluno.id %}" class="btn btn-sm btn-info" title="Visualizar">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'alunos:aluno_update' aluno.id %}" class="btn btn-sm btn-warning" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% if aluno.status == 'ATIVO' %}
+                                <a href="{% url 'alunos:aluno_inativar' aluno.id %}" class="btn btn-sm btn-secondary" title="Inativar">
+                                    <i class="fas fa-ban"></i>
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'alunos:aluno_delete' aluno.id %}" class="btn btn-sm btn-danger" title="Deletar">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">Primeira</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">
+                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        {% else %}
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i> Nenhum aluno cadastrado. 
+            <a href="{% url 'alunos:aluno_create' %}" class="alert-link">Clique aqui para adicionar um novo aluno</a>.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

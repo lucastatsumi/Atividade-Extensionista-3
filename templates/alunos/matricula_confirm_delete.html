@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Deletar Matrícula - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão de Matrícula</h1>
+    <p>Tem certeza que deseja deletar esta matrícula?</p>
+</div>
+
+<div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+        <i class="fas fa-warning"></i> Atenção - Ação Irreversível
+    </div>
+    <div class="card-body">
+        <p>Você está prestes a deletar permanentemente a seguinte matrícula:</p>
+        
+        <div class="alert alert-warning">
+            <strong>Aluno:</strong> {{ object.aluno.nome }}<br>
+            <strong>Turma:</strong> {{ object.turma.nome }}<br>
+            <strong>Série:</strong> {{ object.turma.serie.nome }}<br>
+            <strong>Status:</strong> {{ object.get_status_display }}
+        </div>
+
+        <p class="text-danger">
+            <strong>⚠️ Aviso:</strong> Esta ação não pode ser desfeita.
+        </p>
+
+        <form method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-lg">
+                <i class="fas fa-trash"></i> Sim, Deletar Matrícula
+            </button>
+            <a href="{% url 'alunos:matricula_list' %}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

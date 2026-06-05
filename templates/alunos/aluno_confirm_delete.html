@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Deletar Aluno - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h1>
+    <p>Tem certeza que deseja deletar este aluno?</p>
+</div>
+
+<div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+        <i class="fas fa-warning"></i> Atenção - Ação Irreversível
+    </div>
+    <div class="card-body">
+        <p>Você está prestes a deletar permanentemente o seguinte aluno:</p>
+        
+        <div class="alert alert-warning">
+            <strong>{{ object.nome }}</strong><br>
+            Data de Nascimento: {{ object.data_nascimento|date:"d/m/Y" }}<br>
+            Status: {% if object.status == 'ATIVO' %}<span class="badge bg-success">Ativo</span>{% else %}<span class="badge bg-secondary">Inativo</span>{% endif %}
+        </div>
+
+        <p class="text-danger">
+            <strong>⚠️ Aviso:</strong> Esta ação não pode ser desfeita. Todos os dados associados a este aluno serão deletados permanentemente.
+        </p>
+
+        <form method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-lg">
+                <i class="fas fa-trash"></i> Sim, Deletar Aluno
+            </button>
+            <a href="{% url 'alunos:aluno_list' %}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
