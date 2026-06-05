@@ -251,19 +251,19 @@
 
                     {% if user.role != 'PROF' %}
                         <div class="nav-section-title">Gestão</div>
-                        <a href="{% url 'escola:serie_list' %}" class="nav-link {% if 'serie' in request.resolver_match.url_name %}active{% endif %}">
+                        <a href="{% url 'escola:serie_list' %}" class="nav-link {% if request.resolver_match and 'serie' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-layer-group"></i> Séries
                         </a>
-                        <a href="{% url 'escola:turma_list' %}" class="nav-link {% if 'turma' in request.resolver_match.url_name %}active{% endif %}">
+                        <a href="{% url 'escola:turma_list' %}" class="nav-link {% if request.resolver_match and 'turma' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-graduation-cap"></i> Turmas
                         </a>
-                        <a href="{% url 'escola:disciplina_list' %}" class="nav-link {% if 'disciplina' in request.resolver_match.url_name %}active{% endif %}">
+                        <a href="{% url 'escola:disciplina_list' %}" class="nav-link {% if request.resolver_match and 'disciplina' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-book"></i> Disciplinas
                         </a>
-                        <a href="{% url 'alunos:aluno_list' %}" class="nav-link {% if 'aluno' in request.resolver_match.url_name %}active{% endif %}">
+                        <a href="{% url 'alunos:aluno_list' %}" class="nav-link {% if request.resolver_match and 'aluno' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-users"></i> Alunos
                         </a>
-                        <a href="{% url 'alunos:matricula_list' %}" class="nav-link {% if 'matricula' in request.resolver_match.url_name %}active{% endif %}">
+                        <a href="{% url 'alunos:matricula_list' %}" class="nav-link {% if request.resolver_match and 'matricula' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-file-contract"></i> Matrículas
                         </a>
                     {% endif %}
