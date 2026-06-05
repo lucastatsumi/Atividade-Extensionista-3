@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 import logging
 from datetime import date
 from accounts.mixins import ProfessorRequiredMixin
+from accounts.models import User
 from .models import Frequencia
 from .forms import FrequenciaForm, ChamadaDiariaForm
 from escola.models import Turma
@@ -173,7 +174,7 @@ def atualizar_status_presenca(request):
         matricula = get_object_or_404(Matricula, aluno=aluno, turma=turma, status='ATIVA')
         
         # Verify that the request user has permission (must be professor or coordenador)
-        if not (request.user.role in ['professor', 'coordenador']):
+        if request.user.role not in [User.Role.PROFESSOR, User.Role.COORDENADOR, User.Role.ADMIN]:
             return JsonResponse({'success': False, 'error': 'Sem permissão para atualizar status'}, status=403)
         
         # Create or update the frequency record

@@ -169,7 +169,7 @@ function atualizarStatus(radioElement) {
     const dataField = document.querySelector('input[name="data"]');
     
     if (!turmaField || !dataField || !turmaField.value || !dataField.value) {
-        console.error('Campos obrigatórios não encontrados no formulário');
+        alert('Erro ao atualizar status: Campos obrigatórios faltam');
         return;
     }
     
@@ -192,13 +192,11 @@ function atualizarStatus(radioElement) {
     .then(response => response.json())
     .then(data => {
         if (!data.success) {
-            console.error('Erro ao atualizar status:', data.error);
-            alert('Erro ao atualizar status: ' + data.error);
+            alert('Erro ao atualizar status. Por favor, tente novamente.');
         }
     })
     .catch(error => {
-        console.error('Erro na requisição:', error);
-        alert('Erro ao atualizar status: ' + error);
+        alert('Erro ao atualizar status. Por favor, tente novamente.');
     });
 }
 
