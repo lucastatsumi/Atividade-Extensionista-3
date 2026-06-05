@@ -9,14 +9,6 @@
     <p>Registre a presença dos alunos</p>
 </div>
 
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    {% endfor %}
-{% endif %}
 
 <div class="card mb-4">
     <div class="card-header">
@@ -55,6 +47,8 @@
 {% if turma_selecionada %}
 <form method="post" id="chamada-form">
     {% csrf_token %}
+    <input type="hidden" name="turma" value="{{ turma_selecionada.id }}">
+    <input type="hidden" name="data" value="{{ data_selecionada|date:'Y-m-d' }}">
     
     <div class="card">
         <div class="card-header">
@@ -136,4 +130,14 @@
     </div>
 </form>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function marcarTodos(status) {
+    document.querySelectorAll(`#chamada-form input[type="radio"][value="${status}"]`).forEach((radio) => {
+        radio.checked = true;
+    });
+}
+</script>
 {% endblock %}
