@@ -6,6 +6,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from accounts.mixins import CoordenadorRequiredMixin, AdminRequiredMixin
 from .models import Serie, Disciplina, Turma, Professor
 from .forms import SerieForm, DisciplinaForm, TurmaForm, ProfessorForm
+from alunos.models import Matricula, Aluno
 
 
 # CRUD for Serie
@@ -76,6 +77,20 @@ class TurmaListView(CoordenadorRequiredMixin, ListView):
     template_name = 'escola/turma_list.html'
     context_object_name = 'turmas'
     paginate_by = 10
+
+
+class TurmaDetailView(CoordenadorRequiredMixin, DetailView):
+    model = Turma
+    template_name = 'escola/turma_detail.html'
+    context_object_name = 'turma'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get all enrollments for this class
+        matriculas = Matricula.objects.filter(turma=self.object).select_related('aluno')
+        context['matriculas'] = matriculas
+        context['total_alunos'] = matriculas.count()
+        return context
 
 
 class TurmaCreateView(CoordenadorRequiredMixin, SuccessMessageMixin, CreateView):

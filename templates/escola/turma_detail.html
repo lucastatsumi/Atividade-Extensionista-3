@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ turma.nome }} - EduPresence{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="fas fa-layer-group"></i> {{ turma.nome }}</h1>
+            <p>Detalhes da turma e alunos matriculados</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'alunos:matricula_create' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Adicionar Aluno
+            </a>
+            <a href="{% url 'escola:turma_list' %}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row mb-4">
+    <!-- Class Information Card -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Informações da Turma
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Nome:</dt>
+                    <dd class="col-sm-8"><strong>{{ turma.nome }}</strong></dd>
+
+                    <dt class="col-sm-4">Série:</dt>
+                    <dd class="col-sm-8">{{ turma.serie.nome }}</dd>
+
+                    <dt class="col-sm-4">Ano Letivo:</dt>
+                    <dd class="col-sm-8">{{ turma.ano }}</dd>
+
+                    <dt class="col-sm-4">Período:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-info">{{ turma.get_periodo_display }}</span>
+                    </dd>
+
+                    <dt class="col-sm-4">Status:</dt>
+                    <dd class="col-sm-8">
+                        {% if turma.ativo %}
+                            <span class="badge bg-success">Ativa</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inativa</span>
+                        {% endif %}
+                    </dd>
+                </dl>
+
+                <div class="mt-3">
+                    <a href="{% url 'escola:turma_update' turma.id %}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i> Editar Turma
+                    </a>
+                    <a href="{% url 'escola:turma_delete' turma.id %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Deletar Turma
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Card -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-pie"></i> Estatísticas
+            </div>
+            <div class="card-body text-center">
+                <h3 class="display-4">{{ total_alunos }}</h3>
+                <p class="text-muted">Alunos matriculados</p>
+                
+                {% if matriculas %}
+                    <div class="mt-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">Ativos</small>
+                                <h5>{% widthratio matriculas|length total_alunos 100 %}%</h5>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mt-3" role="alert">
+                        <i class="fas fa-info-circle"></i> Nenhum aluno matriculado ainda
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Students List -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <i class="fas fa-list"></i> Alunos Matriculados ({{ total_alunos }})
+        </div>
+        <a href="{% url 'alunos:matricula_create' %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus"></i> Adicionar
+        </a>
+    </div>
+    <div class="card-body">
+        {% if matriculas %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Data de Nascimento</th>
+                        <th>Responsável</th>
+                        <th>Status</th>
+                        <th>Data de Matrícula</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for matricula in matriculas %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'alunos:aluno_detail' matricula.aluno.id %}" class="text-decoration-none">
+                                <strong>{{ matricula.aluno.nome }}</strong>
+                            </a>
+                        </td>
+                        <td>{{ matricula.aluno.data_nascimento|date:"d/m/Y" }}</td>
+                        <td>{{ matricula.aluno.responsavel }}</td>
+                        <td>
+                            {% if matricula.status == 'ATIVA' %}
+                                <span class="badge bg-success">Ativa</span>
+                            {% elif matricula.status == 'CANCELADA' %}
+                                <span class="badge bg-danger">Cancelada</span>
+                            {% elif matricula.status == 'TRANSFERIDA' %}
+                                <span class="badge bg-warning">Transferida</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ matricula.data_matricula|date:"d/m/Y" }}</td>
+                        <td>
+                            <a href="{% url 'alunos:matricula_update' matricula.id %}" class="btn btn-sm btn-warning" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'alunos:matricula_delete' matricula.id %}" class="btn btn-sm btn-danger" title="Remover">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i> Nenhum aluno matriculado nesta turma. 
+            <a href="{% url 'alunos:matricula_create' %}" class="alert-link">Clique aqui para matricular um aluno</a>.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Add Student Card -->
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="fas fa-user-plus"></i> Matricular Aluno Rapidamente
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Para adicionar um novo aluno a esta turma:</p>
+        <ol>
+            <li>Clique em <strong>"Adicionar Aluno"</strong> no topo da página</li>
+            <li>Selecione o aluno que deseja matricular</li>
+            <li>Escolha esta turma ({{ turma.nome }})</li>
+            <li>Confirme a matrícula</li>
+        </ol>
+        <p class="text-muted small mt-3">Se o aluno não existe ainda no sistema, primeiro <a href="{% url 'alunos:aluno_create' %}">crie o perfil do aluno</a>.</p>
+    </div>
+</div>
+{% endblock %}
