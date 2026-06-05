@@ -164,7 +164,7 @@ def atualizar_status_presenca(request):
         status = request.POST.get('status')
         
         if not all([aluno_id, turma_id, data, status]):
-            return JsonResponse({'success': False, 'error': 'Campos obrigatórios faltando'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Campos obrigatórios faltantes'}, status=400)
         
         # Get and validate objects
         turma = get_object_or_404(Turma, id=turma_id, ativo=True)
