@@ -86,10 +86,13 @@ class TurmaDetailView(CoordenadorRequiredMixin, DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get all enrollments for this class
-        matriculas = Matricula.objects.filter(turma=self.object).select_related('aluno')
+        # Get all enrollments for this class, ordered by student name
+        matriculas = Matricula.objects.filter(turma=self.object).select_related('aluno').order_by('aluno__nome')
         context['matriculas'] = matriculas
         context['total_alunos'] = matriculas.count()
+        # Count active enrollments
+        ativas = matriculas.filter(status='ATIVA').count()
+        context['alunos_ativos'] = ativas
         return context
 
 

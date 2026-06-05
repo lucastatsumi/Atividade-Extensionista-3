@@ -80,19 +80,27 @@
             <div class="card-header">
                 <i class="fas fa-chart-pie"></i> Estatísticas
             </div>
-            <div class="card-body text-center">
-                <h3 class="display-4">{{ total_alunos }}</h3>
-                <p class="text-muted">Alunos matriculados</p>
-                
+            <div class="card-body">
                 {% if matriculas %}
-                    <div class="mt-3">
-                        <div class="row">
-                            <div class="col-6">
-                                <small class="text-muted">Ativos</small>
-                                <h5>{% widthratio matriculas|length total_alunos 100 %}%</h5>
-                            </div>
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <h4 class="text-muted">Total</h4>
+                            <h2 class="text-primary">{{ total_alunos }}</h2>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-muted">Ativos</h4>
+                            <h2 class="text-success">{{ alunos_ativos }}</h2>
                         </div>
                     </div>
+                    {% if total_alunos > 0 %}
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {% widthratio alunos_ativos total_alunos 100 %}%"
+                                 aria-valuenow="{{ alunos_ativos }}" aria-valuemin="0" aria-valuemax="{{ total_alunos }}">
+                                {% widthratio alunos_ativos total_alunos 100 %}%
+                            </div>
+                        </div>
+                    {% endif %}
                 {% else %}
                     <div class="alert alert-info mt-3" role="alert">
                         <i class="fas fa-info-circle"></i> Nenhum aluno matriculado ainda
