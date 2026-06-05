@@ -19,6 +19,7 @@ urlpatterns = [
     # Turma URLs
     path('turmas/', views.TurmaListView.as_view(), name='turma_list'),
     path('turmas/create/', views.TurmaCreateView.as_view(), name='turma_create'),
+    path('turmas/<int:pk>/', views.TurmaDetailView.as_view(), name='turma_detail'),
     path('turmas/<int:pk>/edit/', views.TurmaUpdateView.as_view(), name='turma_update'),
     path('turmas/<int:pk>/delete/', views.TurmaDeleteView.as_view(), name='turma_delete'),
 ]

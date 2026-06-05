@@ -37,78 +37,87 @@
                         <th>Nome</th>
                         <th>Série</th>
                         <th>Período</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for turma in turmas %}
-                    <tr>
-                        <td>
+                    <th>Alunos</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for turma in turmas %}
+                <tr>
+                    <td>
+                        <a href="{% url 'escola:turma_detail' turma.id %}" class="text-decoration-none">
                             <strong>{{ turma.nome }}</strong>
-                        </td>
-                        <td>{{ turma.serie.nome }}</td>
-                        <td>
-                            {% if turma.periodo %}
-                                <span class="badge bg-info">{{ turma.get_periodo_display }}</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if turma.ativo %}
-                                <span class="badge bg-success">Ativa</span>
-                            {% else %}
-                                <span class="badge bg-secondary">Inativa</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{% url 'escola:turma_update' turma.id %}" class="btn btn-sm btn-warning" title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="{% url 'escola:turma_delete' turma.id %}" class="btn btn-sm btn-danger" title="Deletar">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        {% if is_paginated %}
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-                {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1">Primeira</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-                    </li>
-                {% endif %}
-
-                <li class="page-item active">
-                    <span class="page-link">
-                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-                    </span>
-                </li>
-
-                {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
-        {% else %}
-        <div class="alert alert-info" role="alert">
-            <i class="fas fa-info-circle"></i> Nenhuma turma cadastrada. 
-            <a href="{% url 'escola:turma_create' %}" class="alert-link">Clique aqui para adicionar uma nova turma</a>.
-        </div>
-        {% endif %}
+                        </a>
+                    </td>
+                    <td>{{ turma.serie.nome }}</td>
+                    <td>
+                        {% if turma.periodo %}
+                            <span class="badge bg-info">{{ turma.get_periodo_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary">{{ turma.matriculas.count }}</span>
+                    </td>
+                    <td>
+                        {% if turma.ativo %}
+                            <span class="badge bg-success">Ativa</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inativa</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'escola:turma_detail' turma.id %}" class="btn btn-sm btn-info" title="Visualizar">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'escola:turma_update' turma.id %}" class="btn btn-sm btn-warning" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'escola:turma_delete' turma.id %}" class="btn btn-sm btn-danger" title="Deletar">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">Primeira</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                </span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle"></i> Nenhuma turma cadastrada. 
+        <a href="{% url 'escola:turma_create' %}" class="alert-link">Clique aqui para adicionar uma nova turma</a>.
+    </div>
+    {% endif %}
+</div>
 </div>
 {% endblock %}
