@@ -1,15 +1,17 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, FormView
 from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from datetime import date
 from accounts.mixins import ProfessorRequiredMixin
 from .models import Frequencia
 from .forms import FrequenciaForm, ChamadaDiariaForm
+from escola.models import Turma
+from alunos.models import Aluno, Matricula
 
 
 class ChamadaDiariaView(ProfessorRequiredMixin, FormView):
@@ -62,7 +64,6 @@ class ChamadaDiariaView(ProfessorRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from escola.models import Turma
         
         # Always include turmas for the form
         context['turmas'] = Turma.objects.filter(ativo=True)
@@ -127,8 +128,6 @@ class HistoricoFrequenciaListView(ProfessorRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from escola.models import Turma
-        from alunos.models import Aluno
         
         context['turmas'] = Turma.objects.filter(ativo=True)
         context['alunos'] = Aluno.objects.filter(status='ATIVO')
@@ -151,6 +150,7 @@ class FrequenciaCreateView(ProfessorRequiredMixin, SuccessMessageMixin, CreateVi
 
 
 @require_http_methods(["POST"])
+@login_required
 def atualizar_status_presenca(request):
     """API endpoint for updating attendance status in real-time"""
     try:
@@ -160,18 +160,18 @@ def atualizar_status_presenca(request):
         status = request.POST.get('status')
         
         if not all([aluno_id, turma_id, data, status]):
-            return JsonResponse({'success': False, 'error': 'Missing required fields'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Campos obrigatórios faltando'}, status=400)
         
-        from escola.models import Turma
-        from alunos.models import Aluno
+        # Get and validate objects
+        turma = get_object_or_404(Turma, id=turma_id, ativo=True)
+        aluno = get_object_or_404(Aluno, id=aluno_id, status='ATIVO')
         
-        # Verify the professor has access to this turma
-        turma = Turma.objects.get(id=turma_id)
-        aluno = Aluno.objects.get(id=aluno_id)
+        # Verify that the aluno is enrolled in the turma
+        matricula = get_object_or_404(Matricula, aluno=aluno, turma=turma, status='ATIVA')
         
-        # Check if the aluno is enrolled in the turma
-        from alunos.models import Matricula
-        matricula = Matricula.objects.get(aluno=aluno, turma=turma, status='ATIVA')
+        # Verify that the request user has permission (must be professor or coordenador)
+        if not (request.user.role in ['professor', 'coordenador']):
+            return JsonResponse({'success': False, 'error': 'Sem permissão para atualizar status'}, status=403)
         
         # Create or update the frequency record
         frequencia, created = Frequencia.objects.update_or_create(
@@ -188,4 +188,8 @@ def atualizar_status_presenca(request):
             'status': frequencia.get_status_display()
         })
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        # Log the error but don't expose sensitive information
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error updating attendance status: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Erro ao atualizar status'}, status=500)

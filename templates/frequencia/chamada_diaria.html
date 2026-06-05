@@ -201,12 +201,6 @@ document.querySelectorAll('.status-radio').forEach((radio) => {
         atualizarStatus(this);
     });
 });
-
-// Update form submission to also save all records
-document.getElementById('chamada-form').addEventListener('submit', function(e) {
-    // The form will still be submitted for batch saving if needed
-    // This maintains backward compatibility
-});
 </script>
 {% endblock %}
 
